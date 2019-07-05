@@ -4,7 +4,7 @@
 module TimeService
   # create main class
   class TimeMain
-    attr_accessor :hour, :minutes, :time_format, :min_output, :hour_output
+    attr_accessor :hour, :minutes, :time_format, :min_output, :hour_output, :many_hours, :many_times
     def initialize
       @hour = hour
       @minutes = minutes
@@ -13,6 +13,8 @@ module TimeService
       @hour_const = 12
       @min_output = min_output
       @hour_output = hour_output
+      @many_hours = many_hours
+      @many_times = many_times
     end
 
     def parsing_time(add_time, add_minutes)
@@ -24,14 +26,15 @@ module TimeService
 
       calculate_minut
       calculate_hour
-      define_format if @hour_output >= 12
+      define_format
     end
 
     def calculate_minut
       if @minutes >= 60
-        many_times = @minutes / @min_const
-        @min_output = @minutes - @min_const * many_times
-        @hour_output = @hour + many_times
+        @many_times = @minutes / @min_const
+        @min_output = @minutes - @min_const * @many_times
+        @hour_output = @hour + @many_times
+        @many_hours = @hour_output / @hour_const
       else
         @min_output = @minutes
         @hour_output = @hour
@@ -39,13 +42,21 @@ module TimeService
     end
 
     def calculate_hour
-      @hour_output = (@hour_output - @hour_const) if @hour_output > 12
+      unless @many_hours.nil?
+        @many_hours.times do |i|
+          @hour_output = (@hour_output - @hour_const) if @hour_output > 12
+        end
+      end
     end
 
     def define_format
-      case @time_format
-      when 'AM' then @time_format = 'PM'
-      when 'PM' then @time_format = 'AM'
+      unless @many_hours.nil?
+        @many_hours.times do |i|
+          case @time_format
+          when 'AM' then @time_format = 'PM'
+          when 'PM' then @time_format = 'AM'
+          end
+        end
       end
     end
 
@@ -64,4 +75,10 @@ module TimeService
   end
 end
 
-TimeService::Time.new.add_minutes('9:10 AM', 175)
+TimeService::Time.new.add_minutes('9:05 AM', 5)
+TimeService::Time.new.add_minutes('9:05 AM', 15)
+TimeService::Time.new.add_minutes('9:05 AM', 60)
+TimeService::Time.new.add_minutes('9:05 AM', 120)
+TimeService::Time.new.add_minutes('9:05 AM', 300)
+TimeService::Time.new.add_minutes('9:05 AM', 600)
+TimeService::Time.new.add_minutes('9:05 AM', 1000)

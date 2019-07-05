@@ -1,3 +1,6 @@
 .idea
 Gemfile
 Gemfile.lock
+.fasterer.yml
+spec
+.rspec
