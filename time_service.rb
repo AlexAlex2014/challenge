@@ -43,7 +43,7 @@ module TimeService
 
     def calculate_hour
       unless @many_hours.nil?
-        @many_hours.times do |i|
+        @many_hours.times do
           @hour_output = (@hour_output - @hour_const) if @hour_output > 12
         end
       end
@@ -51,7 +51,7 @@ module TimeService
 
     def define_format
       unless @many_hours.nil?
-        @many_hours.times do |i|
+        @many_hours.times do
           case @time_format
           when 'AM' then @time_format = 'PM'
           when 'PM' then @time_format = 'AM'
